@@ -2,26 +2,25 @@ rules_version = '2';
 service cloud.firestore {
  match /databases/{database}/documents {
   match /reports/{reportId} {
-   allow create: if request.auth != null
-    && request.resource.data.ownerUid == request.auth.uid
-    && request.resource.data.status == 'pending'
-    && request.resource.data.schemaVersion == 2
-    && request.resource.data.photoPath == 'reports/' + request.auth.uid + '/' + reportId + '/photo.jpg'
-    && request.resource.data.keys().hasOnly(['schemaVersion','status','source','location','category','place','observationDate','shadeObservation','description','ownerUid','photoPath','photoContentType','createdAt','updatedAt'])
-    && request.resource.data.category is string
-    && request.resource.data.shadeObservation is string
-    && request.resource.data.place is string
-    && request.resource.data.description is string
-    && request.resource.data.place.size() <= 120
-    && request.resource.data.description.size() <= 600
-    && request.resource.data.location.type == 'Point'
-    && request.resource.data.location.coordinates is list
-    && request.resource.data.location.coordinates.size() == 2
-    && request.resource.data.location.coordinates[0] is number
-    && request.resource.data.location.coordinates[1] is number
-    && request.resource.data.createdAt == request.time;
-   allow get, list: if request.auth != null && (resource.data.ownerUid == request.auth.uid || request.auth.token.admin == true);
-   allow update, delete: if request.auth != null && request.auth.token.admin == true;
+   function signedIn(){return request.auth != null;}
+   function admin(){return signedIn() && request.auth.token.admin == true;}
+   allow create: if signedIn() && request.resource.data.keys().hasOnly(['schemaVersion','status','source','ownerUid','location','category','place','observationDate','shadeObservation','description','createdAt','updatedAt'])
+     && request.resource.data.ownerUid == request.auth.uid
+     && request.resource.data.schemaVersion == 2
+     && request.resource.data.status == 'pending'
+     && request.resource.data.source == 'citizen_observation_unverified'
+     && request.resource.data.category is string && request.resource.data.category.size() <= 80
+     && request.resource.data.shadeObservation is string && request.resource.data.shadeObservation.size() <= 80
+     && request.resource.data.place is string && request.resource.data.place.size() <= 120
+     && request.resource.data.description is string && request.resource.data.description.size() <= 600
+     && request.resource.data.observationDate is string && request.resource.data.observationDate.size() == 10
+     && request.resource.data.location.type == 'Point'
+     && request.resource.data.location.coordinates is list && request.resource.data.location.coordinates.size() == 2
+     && request.resource.data.location.coordinates[0] is number && request.resource.data.location.coordinates[0] >= 115 && request.resource.data.location.coordinates[0] <= 125
+     && request.resource.data.location.coordinates[1] is number && request.resource.data.location.coordinates[1] >= 20 && request.resource.data.location.coordinates[1] <= 27
+     && request.resource.data.createdAt == request.time && request.resource.data.updatedAt == request.time;
+   allow get,list: if signedIn() && (resource.data.ownerUid == request.auth.uid || admin());
+   allow update,delete: if admin();
   }
  }
 }
