@@ -4,7 +4,7 @@ service cloud.firestore {
   match /reports/{reportId} {
    function signedIn(){return request.auth != null;}
    function admin(){return signedIn() && request.auth.token.admin == true;}
-   allow create: if signedIn() && request.resource.data.keys().hasOnly(['schemaVersion','status','source','ownerUid','location','category','place','observationDate','shadeObservation','description','createdAt','updatedAt'])
+   allow create: if signedIn() && request.resource.data.keys().hasOnly(['schemaVersion','status','source','ownerUid','location','category','place','observationDate','shadeObservation','description','photoPath','createdAt','updatedAt'])
      && request.resource.data.ownerUid == request.auth.uid
      && request.resource.data.schemaVersion == 2
      && request.resource.data.status == 'pending'
@@ -13,6 +13,7 @@ service cloud.firestore {
      && request.resource.data.shadeObservation is string && request.resource.data.shadeObservation.size() <= 80
      && request.resource.data.place is string && request.resource.data.place.size() <= 120
      && request.resource.data.description is string && request.resource.data.description.size() <= 600
+     && request.resource.data.photoPath is string && (request.resource.data.photoPath == '' || request.resource.data.photoPath.matches('reports/' + request.auth.uid + '/' + reportId + '[.](jpg|png|webp)'))
      && request.resource.data.observationDate is string && request.resource.data.observationDate.size() == 10
      && request.resource.data.location.type == 'Point'
      && request.resource.data.location.coordinates is list && request.resource.data.location.coordinates.size() == 2
@@ -20,7 +21,8 @@ service cloud.firestore {
      && request.resource.data.location.coordinates[1] is number && request.resource.data.location.coordinates[1] >= 20 && request.resource.data.location.coordinates[1] <= 27
      && request.resource.data.createdAt == request.time && request.resource.data.updatedAt == request.time;
    allow get,list: if signedIn() && (resource.data.ownerUid == request.auth.uid || admin());
-   allow update,delete: if admin();
+   allow update: if admin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','updatedAt','reviewedAt','reviewedBy']) && request.resource.data.status in ['approved','rejected'] && request.resource.data.reviewedBy == request.auth.uid && request.resource.data.updatedAt == request.time && request.resource.data.reviewedAt == request.time;
+   allow delete: if admin();
   }
  }
 }
