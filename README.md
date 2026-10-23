@@ -1,9 +1,16 @@
-# CoolCity 2.0｜會員修復版
+# CoolCity 2.0｜小樹苗對話框修正版
 
-本版修正上一版遺漏 `initAccount()` 造成的會員中心 Google 登入按鈕消失、電子郵件登入無法操作等問題。
+## 更新內容
+- 右下角「小樹苗」改為網站內浮動對話框，不再跳轉新分頁。
+- 對話框開啟後透過 `postMessage` 傳遞當前 Firebase 會員的 ID Token，Apps Script 後端仍負責驗證會員身分。
+- 後端 `doGet()` 加上 `setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)`，允許 Google Apps Script 頁面被嵌入。此設定僅解除框架限制，不代表 AI 一定可用，仍需檢查實際 Google 部署與瀏覽器限制。
+- 「我的回報」失敗時顯示清楚的提示。尚未證實資料庫查詢正常；需檢查 Firestore 規則、資料及瀏覽器主控台錯誤。
 
-小樹苗暫時改為開啟獨立 Apps Script 頁面，避免嵌入 iframe 出現 Google「無法開啟這個檔案」錯誤。**這不是已完成的會員憑證整合**：獨立頁面仍可能提示需要登入，待後端身分驗證與跨網域傳遞完成後才能正常使用 AI。
+## 更新順序
+1. GitHub 上傳根目錄 `index.html` 和 `assets/`、`firestore.rules`（如果規則未改，不必重新發布）。
+2. Apps Script `Code.gs` 用 `AppsScript_Code.gs` 更新，`Chat.html` 用 `AppsScript_Chat.html` 更新。
+3. Apps Script「部署 → 管理部署作業 → 編輯 → 新版本 → 部署」，保留原部署網址。
+4. 會員登入後在 CoolCity 右下角開啟小樹苗對話框。
 
-直接覆蓋網站檔案即可。無須更改 Firebase 金鑰、Firestore 規則或 Apps Script 部署。
-
-注意：前一版的其他未完成功能仍未因此完成；照片上傳、管理員審核、中央氣象署實測 API 仍待開發。
+## 限制
+Google Apps Script 的 iframe 可能受 Google 端登入／瀏覽器第三方 Cookie 或安全政策限制，不能保證在所有瀏覽器運作。未完成跨網域實測。若仍顯示 Google 錯誤頁，須改為不同後端架構，不應繼續以 iframe 假裝已完成。
