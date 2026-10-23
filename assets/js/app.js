@@ -11,6 +11,33 @@ const pages={
 };
 function render(){const page=location.hash.replace('#','')||'home';try{app.innerHTML=(pages[page]||pages.home)();}catch(error){console.error('CoolCity page render error:',error);app.innerHTML='<section class="container"><h1>頁面暫時無法顯示</h1><p>請重新整理或返回首頁。其他分頁仍可使用。</p><a class="btn primary" href="#home">返回首頁</a></section>';return;}document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('active',a.dataset.page===page));nav.classList.remove('open');menu.setAttribute('aria-expanded','false');document.title=`${page==='home'?'CoolCity':({map:'綠蔭地圖',report:'綠蔭回報',analysis:'調適分析',walk:'步行路線',account:'會員中心'}[page]||'CoolCity')}｜CoolCity`;window.scrollTo({top:0,behavior:'instant'});try{if(page==='home')initWeather();if(page==='account')initAccount();if(page==='map')initMap();if(page==='report')initReport().catch(e=>console.error('Report initialization failed:',e));if(page==='walk')initWalk();}catch(error){console.error('CoolCity page initialization error:',error);const notice=document.createElement('p');notice.className='notice';notice.textContent='部分互動功能暫時無法載入，其他頁面仍可瀏覽。';app.prepend(notice);}}menu.addEventListener('click',()=>{const open=nav.classList.toggle('open');menu.setAttribute('aria-expanded',String(open))});window.addEventListener('hashchange',render);render();
 
+// Member account: restore Google sign-in and email account controls.
+function initAccount(){
+ const $=id=>document.getElementById(id), login=$('member-login'),logout=$('member-logout'),verify=$('member-verify'),content=$('member-content'),status=$('member-status'),panel=$('member-email-panel'),form=$('member-email-form'),submit=$('member-email-submit'),register=$('member-mode-register'),reset=$('member-mode-reset'),nameField=$('member-name-field'),passwordField=$('member-password-field');
+ let mode='login',cloud=null,epoch=0;
+ const say=t=>{if(status)status.textContent=t};
+ const setMode=m=>{mode=m;nameField.hidden=m!=='register';passwordField.hidden=m==='reset';$('member-password').required=m!=='reset';$('member-password').autocomplete=m==='register'?'new-password':'current-password';submit.textContent=m==='register'?'建立帳號':m==='reset'?'寄送重設密碼郵件':'電子郵件登入';};
+ login.hidden=false;login.disabled=true;content.textContent='正在確認登入狀態…';setMode('login');
+ register.addEventListener('click',()=>setMode(mode==='register'?'login':'register'));
+ reset.addEventListener('click',()=>setMode(mode==='reset'?'login':'reset'));
+ import('./firebase-client.js').then(fb=>{
+  if(!document.getElementById('member-login'))return;
+  cloud=fb;login.disabled=false;
+  fb.watchAuth(async user=>{
+   if(!document.getElementById('member-login'))return;
+   const run=++epoch;login.hidden=!!user;logout.hidden=!user;verify.hidden=!user||user.emailVerified||!user.providerData.some(p=>p.providerId==='password');panel.hidden=!!user;
+   if(!user){content.textContent='登入後即可查看會員資料與自己的回報。';return;}
+   content.replaceChildren();const h=document.createElement('h3');h.textContent=user.displayName||'會員';const email=document.createElement('p');email.textContent=user.email||'';content.append(h,email);
+   const heading=document.createElement('h3');heading.textContent='我的回報';content.append(heading);const list=document.createElement('div');list.textContent='正在讀取回報…';content.append(list);
+   try{const items=await fb.listMyReports();if(run!==epoch||!document.getElementById('member-login'))return;list.replaceChildren();if(!items.length){list.textContent='目前沒有回報紀錄。';return;}for(const item of items){const row=document.createElement('p');row.className='member-report-item';row.textContent=[item.category||'現場回報',item.observationDate||'',item.status==='pending'?'待審核':item.status==='approved'?'已通過':item.status==='rejected'?'未通過':item.status||''].filter(Boolean).join(' · ');list.append(row);}}catch(e){list.textContent='暫時無法讀取回報紀錄。';console.error(e);}
+  });
+  login.addEventListener('click',async()=>{try{say('正在開啟 Google 登入…');await fb.loginGoogle();say('');}catch(e){say('Google 登入失敗：'+(e.code||e.message));}});
+  logout.addEventListener('click',async()=>{try{await fb.logout();say('已登出。');}catch(e){say('登出失敗：'+e.message)}});
+  verify.addEventListener('click',async()=>{try{await fb.resendVerification();say('驗證信已寄出。');}catch(e){say('寄送失敗：'+e.message)}});
+  form.addEventListener('submit',async e=>{e.preventDefault();const email=$('member-email').value.trim(),password=$('member-password').value;submit.disabled=true;try{if(mode==='reset'){await fb.resetPassword(email);say('如果帳號存在且符合條件，將收到密碼重設郵件。');}else if(mode==='register'){await fb.registerEmail(email,password,$('member-name').value);say('註冊成功，請查看電子郵件驗證信。');}else{await fb.loginEmail(email,password);say('登入成功。');}}catch(err){say('操作未完成：'+(err.code||err.message));}finally{submit.disabled=false;}});
+ }).catch(e=>{login.disabled=true;content.textContent='會員服務暫時無法載入。';say('Firebase 載入失敗，請稍後重新整理。');console.error(e)});
+}
+
 const treeCounts={'學勤路':{sidewalk:162,median:42},'學成路':{sidewalk:225,median:51},'學府路':{sidewalk:215},'大學路':{sidewalk:186},'三樹路':{sidewalk:94,median:34},'大義路':{sidewalk:96},'國慶路':{sidewalk:72},'龍埔路':{sidewalk:143}};
 const pedestrianClasses=new Set(['footway','pedestrian','path','steps']);
 async function initMap(){
@@ -96,12 +123,9 @@ function initWeather(){
 // Gemini assistant lives in an Apps Script iframe, using Firebase token only after verified handshake.
 const SEEDLING_URL='https://script.google.com/macros/s/AKfycbwxkgyParCIGkhR1WJUSRdsdArfezyGcZDAG8m2Z6wPmxzkdnUj03q9T-bgo-lNLCpj/exec';
 function initSeedling(){
- const wrap=document.createElement('section');wrap.className='seedling';wrap.innerHTML='<button id="seedling-toggle" class="seedling-toggle" type="button" aria-expanded="false" aria-controls="seedling-panel">🌱 小樹苗</button><div id="seedling-panel" class="seedling-panel" hidden><div class="seedling-head"><strong>🌱 小樹苗</strong><button id="seedling-close" type="button" aria-label="關閉小樹苗">✕</button></div><p id="seedling-state" class="seedling-state">登入會員後即可與小樹苗對話。</p><div id="seedling-frame-slot"></div></div>';document.body.append(wrap);
- const toggle=wrap.querySelector('#seedling-toggle'),panel=wrap.querySelector('#seedling-panel'),state=wrap.querySelector('#seedling-state'),slot=wrap.querySelector('#seedling-frame-slot');let frame=null,auth=null,origin=null;
- const allowed=o=>o==='https://script.google.com'||/^https:\/\/[a-z0-9-]+\.googleusercontent\.com$/.test(o);
- async function sendAuth(){if(!frame||!origin)return;let token='';try{if(auth?.currentUser)token=await auth.currentUser.getIdToken();}catch(e){console.warn('Token unavailable',e);}if(frame.contentWindow)frame.contentWindow.postMessage({type:'coolcity-auth',token},origin);state.textContent=token?'會員已登入，可以開始對話。':'請先到會員中心登入，再使用小樹苗。';}
- window.addEventListener('message',e=>{if(!frame||e.source!==frame.contentWindow||!allowed(e.origin)||e.data?.type!=='coolcity-ready')return;origin=e.origin;sendAuth();});
- toggle.addEventListener('click',()=>{panel.hidden=!panel.hidden;toggle.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden&&!frame){frame=document.createElement('iframe');frame.title='小樹苗 AI 對話';frame.referrerPolicy='no-referrer';frame.src=SEEDLING_URL;slot.append(frame);}if(!panel.hidden)sendAuth();});wrap.querySelector('#seedling-close').addEventListener('click',()=>{panel.hidden=true;toggle.setAttribute('aria-expanded','false');});
- import('./firebase-client.js').then(fb=>{auth=fb.authInstance;fb.watchAuth(()=>sendAuth());}).catch(e=>{console.error(e);state.textContent='會員服務暫時無法載入。';});
+ const wrap=document.createElement('section');wrap.className='seedling';
+ wrap.innerHTML='<a class="seedling-toggle" href="'+SEEDLING_URL+'" target="_blank" rel="noopener noreferrer" aria-label="開啟小樹苗對話">🌱 小樹苗 ↗</a>';
+ document.body.append(wrap);
 }
+
 initSeedling();
