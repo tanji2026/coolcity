@@ -105,3 +105,6 @@ input[type="date"]{display:block;width:100%;min-width:0;max-width:100%;-webkit-a
 .report-layout>*,.map-layout>*,.route-shell>*{min-width:0}
 [hidden]{display:none!important}
 @media(max-width:640px){.panel,.container,.report-layout,.map-layout{max-width:100%;min-width:0}.field{min-width:0}.form{min-width:0}}
+
+/* Member authentication */
+#member-email-panel{max-width:560px;margin:20px 0}#member-email-panel .field{margin:0 0 14px}#member-email-panel .actions{gap:8px;flex-wrap:wrap}#member-email-panel .btn{min-height:42px}.member-separator{margin:18px 0;color:#617787;font-size:14px}#member-content p{overflow-wrap:anywhere}

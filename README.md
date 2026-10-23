@@ -1,25 +1,20 @@
-# CoolCity v5 — 手機拍照與定位回報
+# CoolCity 2.0 — 網站部署說明
 
-部署：將 ZIP **內的檔案**上傳至 `tanji2026/coolcity` 根目錄，保留 `assets/` 結構。網址：https://tanji.tw/coolcity/#report
+將 `index.html`、`assets/` 上傳到 `coolcity` 儲存庫根目錄，覆蓋相同路徑檔案。若儲存庫還有 V5/V6 的舊 README、舊說明檔，請在 GitHub 上另外刪除：上傳 ZIP 不會自動刪除既有檔案。
 
-## 已實作
-- 手機相機／相簿選擇照片，瀏覽器內縮圖壓縮（長邊不超過 1600px，JPEG 品質 0.76），預覽照片
-- GPS 定位（須授權且 HTTPS）／地圖點選／拖曳標記；座標為每筆回報主鍵資訊，不要求文字地址
-- 制式類型、遮蔭選項，日期；地點補充與說明選填
-- 本機回報預覽、下載 JSON 草稿（不含照片）
-- Google 登入與登出、Firestore+Storage 正式送出程式（需 Firebase 設定完成）
-- 原有道路地圖保持不變；沒有 AI 圖片判讀、遮蔭評分、公開回報瀏覽或管理者審核 UI
+## 已接通
+- Firebase Google 登入／登出
+- Firebase 電子郵件註冊、登入、密碼重設、驗證信寄送（須於 Firebase Authentication 啟用電子郵件密碼提供者）
+- 首頁即時氣溫：預設 Open-Meteo 北大特區附近的模式氣溫，非中央氣象署測站實測值，也非人行道溫度。
+- 地圖、步行路線及現場回報草稿預覽
 
-## Firebase Console 必做
-1. Authentication → Sign-in method → Google 啟用。
-2. Authentication → Settings → Authorized domains 加入 `tanji.tw`；若使用 GitHub Pages 原生網址，另加對應網域。
-3. Firestore Database 建立資料庫；到 Rules 貼上 `firestore.rules` 內容並發佈。
-4. Cloud Storage：需符合 Firebase 當前計費方案要求，開啟 Storage 後到 Rules 貼上 `storage.rules` 並發佈。**若尚未啟用 Storage，請先測試拍照、定位與草稿，正式送出會失敗。**
-5. 安全規則為第一階段最小規則範例；正式公開前應加入 App Check、濫用防護、速率限制與完整管理者流程。
+## 中央氣象署實測串接
+CWA Open Data API 需要授權碼，**不要**放入公開 GitHub Pages 程式。若有安全的代理服務，請在 index.html 的 app.js 前加上：
+`<script>window.COOLCITY_WEATHER_ENDPOINT='https://YOUR-SECURE-ENDPOINT';</script>`
+代理需回傳 JSON：`{ "temperature": 30.2, "station": "測站名稱", "observedAt": "2026-10-24T02:00:00+08:00" }`，並正確設定 CORS。未設定時使用 Open-Meteo。
 
-## 資料與安全
-- 每筆回報存入 Firestore `reports/{reportId}`；照片存入 Storage `reports/{uid}/{reportId}/photo.jpg`。
-- 每筆為待確認點位，不代表該道路或區域已確認遮蔭狀態。
-- 前端 `firebaseConfig` 是 Firebase 公開 Web 設定，不是 Gemini API 密鑰。不要將私密金鑰或管理員憑證放進 GitHub。
-- 目前照片上傳先於 Firestore 寫入；若 Firestore 寫入失敗，可能殘留尚未對應回報的 Storage 照片。正式公開前應加入後端清理機制。
-- 使用者的 GPS 與照片僅在其主動操作後處理。正式公開前需補充隱私告知、照片保存及刪除政策。
+## 尚需後端才能安全啟用
+照片上傳、Gemini「小樹苗」對話、審核後台與回報資料庫寫入。目前前端僅有草稿預覽，不會聲稱已送出。不要把 Gemini 或氣象署金鑰寫進公開檔案。
+
+## 驗證
+部署後請測試 Google 登入／登出、電子郵件註冊／驗證／登入／忘記密碼、首頁氣溫顯示、地圖及步行路線。
