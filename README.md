@@ -12,3 +12,7 @@ TanJi 碳吉的都市高溫調適與綠蔭規劃平台（第一版網站架構�
 直接開啟 `index.html` 可能因瀏覽器對 ES Modules 的本機檔案限制而失敗。可在專案目錄執行 `python3 -m http.server 8000`，再瀏覽 `http://localhost:8000/`。
 
 詳見 `docs/ARCHITECTURE.md`。
+
+
+## v2 地圖更新
+新增 Leaflet 道路互動地圖及 assets/data/roads.geojson。將 ZIP 內全部檔案維持目錄結構上傳 GitHub。底圖使用 OSM 公共圖磚（正式大量流量部署前需評估圖磚政策）。道路資料 © OpenStreetMap contributors，依 ODbL 授權。資料不表示遮蔭或人行道現況已確認。
