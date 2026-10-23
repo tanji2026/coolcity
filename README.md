@@ -1,15 +1,25 @@
-# CoolCity Map v4｜綠蔭回報草稿測試版
+# CoolCity v5 — 手機拍照與定位回報
 
-正式名稱：都市高溫調適與綠蔭改善決策平台（CoolCity）。
+部署：將 ZIP **內的檔案**上傳至 `tanji2026/coolcity` 根目錄，保留 `assets/` 結構。網址：https://tanji.tw/coolcity/#report
 
-## 本版更新
-- 網站英文品牌 CoolCity 為主，旁邊小字顯示正式中文名稱。
-- 綠蔭回報頁加入 Leaflet 地圖選點、回報欄位、表單檢查、草稿預覽及 JSON 下載。
-- **不會送出、上傳或自動保存回報**。尚未連接 Firebase。
-- 綠蔭地圖道路資料及原有道路點選功能不變。
+## 已實作
+- 手機相機／相簿選擇照片，瀏覽器內縮圖壓縮（長邊不超過 1600px，JPEG 品質 0.76），預覽照片
+- GPS 定位（須授權且 HTTPS）／地圖點選／拖曳標記；座標為每筆回報主鍵資訊，不要求文字地址
+- 制式類型、遮蔭選項，日期；地點補充與說明選填
+- 本機回報預覽、下載 JSON 草稿（不含照片）
+- Google 登入與登出、Firestore+Storage 正式送出程式（需 Firebase 設定完成）
+- 原有道路地圖保持不變；沒有 AI 圖片判讀、遮蔭評分、公開回報瀏覽或管理者審核 UI
 
-## 部署
-將 ZIP 解壓縮後所有檔案與資料夾上傳至 `tanji2026/coolcity` 儲存庫根目錄，覆蓋同名檔案；保留 `assets/data/roads.geojson` 的路徑。GitHub Pages 網址：https://tanji.tw/coolcity/
+## Firebase Console 必做
+1. Authentication → Sign-in method → Google 啟用。
+2. Authentication → Settings → Authorized domains 加入 `tanji.tw`；若使用 GitHub Pages 原生網址，另加對應網域。
+3. Firestore Database 建立資料庫；到 Rules 貼上 `firestore.rules` 內容並發佈。
+4. Cloud Storage：需符合 Firebase 當前計費方案要求，開啟 Storage 後到 Rules 貼上 `storage.rules` 並發佈。**若尚未啟用 Storage，請先測試拍照、定位與草稿，正式送出會失敗。**
+5. 安全規則為第一階段最小規則範例；正式公開前應加入 App Check、濫用防護、速率限制與完整管理者流程。
 
-## 下一步（尚未實作）
-Firebase App Check、Firestore 安全規則、身分驗證、圖片儲存與管理者審核，通過測試後才能啟用正式回報提交。
+## 資料與安全
+- 每筆回報存入 Firestore `reports/{reportId}`；照片存入 Storage `reports/{uid}/{reportId}/photo.jpg`。
+- 每筆為待確認點位，不代表該道路或區域已確認遮蔭狀態。
+- 前端 `firebaseConfig` 是 Firebase 公開 Web 設定，不是 Gemini API 密鑰。不要將私密金鑰或管理員憑證放進 GitHub。
+- 目前照片上傳先於 Firestore 寫入；若 Firestore 寫入失敗，可能殘留尚未對應回報的 Storage 照片。正式公開前應加入後端清理機制。
+- 使用者的 GPS 與照片僅在其主動操作後處理。正式公開前需補充隱私告知、照片保存及刪除政策。
