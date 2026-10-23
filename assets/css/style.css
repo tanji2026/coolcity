@@ -86,3 +86,12 @@ html,body{max-width:100%;overflow-x:clip}main,.container,.panel,.report-layout,.
 .field input[type="date"]{display:block;width:100%;max-width:100%;min-width:0;min-height:48px;padding:10px 12px;line-height:normal;appearance:auto;-webkit-appearance:auto;color:#17263b;background:#fff}
 .weather-strip{display:inline-flex;align-items:center;gap:13px;background:#ffffff17;border:1px solid #ffffff44;border-radius:14px;padding:12px 17px;margin-top:14px;max-width:100%}.weather-temp{font-size:30px;font-weight:800;line-height:1.2;white-space:nowrap}.weather-strip strong,.weather-strip small{display:block}.weather-strip small{font-size:12px;color:#d7e7ec}
 @media(max-width:600px){.container{padding:26px 16px 60px}.hero{padding:42px 18px}.hero h1{font-size:clamp(27px,8vw,38px)}.actions .btn{max-width:100%}.field input[type="date"]{font-size:16px;min-height:48px}.report-layout .panel{padding:16px}.route-shell{gap:12px}.route-controls,.report-layout,.report-map-panel{min-width:0}}
+
+/* v6 recovery: prevent mobile Safari date input and nested grid overflow */
+*,*::before,*::after{box-sizing:border-box}
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+#app,#app>section,.container,.panel,.report-layout,.report-map-panel,.form,.field,.route-shell,.route-controls{min-width:0;max-width:100%}
+.field input[type=date]{width:100%;max-width:100%;min-width:0;display:block;-webkit-min-logical-width:0;font-size:16px;box-sizing:border-box}
+.field input[type=date]::-webkit-date-and-time-value{min-width:0;text-align:left}
+.field input[type=date]::-webkit-calendar-picker-indicator{margin:0;flex-shrink:0}
+@media(max-width:600px){.report-layout>.panel,.report-layout>.report-map-panel{width:100%;min-width:0}.header{min-width:0}.brand{min-width:0}.brand-text{min-width:0;overflow-wrap:anywhere}}
