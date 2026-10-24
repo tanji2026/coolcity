@@ -6,7 +6,7 @@ const intro=(label,title,description)=>`<span class="eyebrow">${label}</span><h1
 const homeTile=(icon,title,desc,route)=>`<a class="home-tile" href="#${route}"><span class="home-tile-icon" aria-hidden="true">${icon}</span><span class="home-tile-copy"><strong>${title}</strong><small>${desc}</small></span><span class="home-tile-arrow" aria-hidden="true">↗</span></a>`;
 const pages={
  home:()=>`<section class="hero hero-v4"><div class="hero-inner"><div class="hero-copy"><span class="eyebrow">COOLCITY · TANJI</span><h1>多一點綠蔭，<br>城市更好走。</h1><p>找綠蔭、看氣溫、分享街道上的真實觀察。</p><div class="weather-box"><div class="weather-title"><strong>查詢當地氣溫</strong><small>中央氣象署測站觀測</small></div><div class="weather-controls"><button class="btn secondary" id="weather-locate" type="button">◎ 目前位置</button><select id="weather-city" aria-label="選擇縣市"><option value="">選擇縣市</option></select><select id="weather-district" aria-label="選擇行政區" disabled><option value="">選擇行政區</option></select><button id="weather-search" class="btn secondary" type="button" disabled>查詢</button></div><div class="weather-strip" id="weather-strip" role="status" aria-live="polite" hidden><span class="weather-temp" id="weather-temp">--°C</span><span><small id="weather-meta"></small></span></div><small id="weather-help" role="status" aria-live="polite">選擇行政區，或使用目前位置查詢。</small></div></div><img class="hero-mascot" src="./assets/images/tanji-baby.jpg" alt="穿著綠色圍裙的碳吉寶寶" loading="eager"></div></section><section class="container home-about"><div class="home-about-heading"><span class="eyebrow">ABOUT COOLCITY</span><h2>關於 CoolCity</h2><p>CoolCity 收集民眾對城市綠蔭與步行環境的觀察，讓需要改善的地方更容易被看見。從下面選擇你想做的事。</p></div><div class="home-tile-grid">${homeTile('◉','綠蔭地圖','看街道與已公開的現場回報','map')}${homeTile('✎','綠蔭回報','拍照、選地點，分享觀察','report')}${homeTile('↗','步行探索','查看示範區的步行路線','walk')}${homeTile('☺','會員中心','查看回報與管理帳號','account')}</div></section>`,
- map:()=>`<section class="container">${intro('SHADE MAP','綠蔭地圖','看道路，也看已通過審核的現場觀察。')}<div class="map-tools"><label class="switch-row"><input type="checkbox" id="map-show-reports" checked> 顯示已審核回報</label><span id="public-map-status" class="muted" role="status" aria-live="polite">正在載入回報…</span></div><div class="map-layout"><div><div id="coolcity-map" role="application" aria-label="道路與已核准回報地圖"></div><div class="map-legend"><span><i></i>道路線段</span><span class="ped"><i></i>步道相關線段</span><span class="public-dot">● 已核准的現場觀察</span></div><p class="muted">道路類型不等於實際遮蔭程度；民眾觀察為個別回報，並非官方測量。地圖 © OpenStreetMap contributors。</p></div><aside class="panel"><h3>地圖資訊</h3><div id="road-detail"><p class="muted">點選道路或回報標記查看資訊。</p></div><hr><h3>資料來源</h3><p class="muted">道路：OpenStreetMap／Geofabrik；已核准回報由 CoolCity 審核後呈現。過去回報的座標採約略位置；新版回報經本人同意才公開精確地點與照片。</p></aside></div></section>`,
+ map:()=>`<section class="container">${intro('SHADE MAP','綠蔭地圖','看道路，也看已通過審核的現場觀察。')}<div class="map-tools"><label class="switch-row"><input type="checkbox" id="map-show-reports" checked> 顯示已審核回報</label><span id="public-map-status" class="muted" role="status" aria-live="polite">正在載入回報…</span></div><div class="map-layout"><div><div id="coolcity-map" role="application" aria-label="道路與已核准回報地圖"></div><div class="map-legend"><span><i></i>道路線段</span><span class="ped"><i></i>步道相關線段</span><span class="public-dot">● 已核准的現場觀察</span></div><p class="muted">道路類型不等於實際遮蔭程度；民眾觀察為個別回報，並非官方測量。地圖 © OpenStreetMap contributors。</p></div><aside class="panel map-detail-panel"><h3>選取項目</h3><div id="road-detail"><p class="muted">點選道路或回報標記查看資訊。</p></div><details class="map-source"><summary>資料來源與使用限制</summary><p class="muted">道路：OpenStreetMap／Geofabrik；已核准回報由 CoolCity 審核後呈現。過去回報的座標採約略位置；新版回報經本人同意才公開精確地點與照片。</p></details></aside></div></section>`,
  report:()=>`<section class="container">${intro('CITIZEN REPORT','綠蔭回報','用手機拍照、確認地圖位置，再選擇現場情況。回報資料以單一觀察點記錄，不會直接當成整條道路的遮蔭狀態。')}<div class="report-layout"><div class="report-map-panel"><div class="map-guide"><strong>確認位置</strong>點選地圖或使用目前位置；標記可以拖動微調。</div><div id="report-map" aria-label="選擇回報位置的互動地圖"></div><div class="location-tools"><button class="btn" id="locate-me" type="button">◎ 使用目前位置</button><span id="selected-coordinates" aria-live="polite">尚未選擇位置</span></div><p class="muted">定位須經你授權，且可能有誤差；請在地圖上確認實際拍攝地點。地圖 © OpenStreetMap contributors。</p></div><section class="panel"><h3>拍照與現況</h3><form id="report-form" class="form"><div class="field"><label for="photo">現場照片</label><input id="photo" type="file" accept="image/*" ><small>可直接拍照或從相簿選擇。請避開人臉、車牌及住家資訊；照片會先在裝置內縮小。</small><img id="photo-preview" class="photo-preview" alt="待回報的照片預覽" hidden></div><div class="field"><label for="kind">回報類型</label><select id="kind" required><option value="">請選擇</option><option>遮蔭不足</option><option>有樹蔭</option><option>樹木修剪或移除</option><option>步行空間問題</option><option>其他觀察</option></select></div><div class="field"><label for="shade">現場遮蔭情形</label><select id="shade" required><option value="">請選擇</option><option>幾乎無遮蔭</option><option>部分遮蔭</option><option>較連續的遮蔭</option><option>無法判斷</option></select></div><div class="field"><label for="observed-at">觀察日期</label><input id="observed-at" type="date" required></div><div class="field"><label for="place">地點補充（選填）</label><input id="place" maxlength="120" placeholder="例如：公車站旁的人行道"><small>以地圖座標為主，不需要自行寫完整地址或道路名稱。</small></div><div class="field"><label for="detail">其他現場說明（選填）</label><textarea id="detail" maxlength="600" placeholder="例如：樹冠很小、遮蔭不連續、步道旁沒有樹。"></textarea></div><label class="report-consent"><input id="public-consent" type="checkbox" required><span>我了解：回報經審核通過後，<strong>我在地圖確認的實際座標</strong>及<strong>上傳的照片（如有）</strong>將公開供所有訪客查看。我確認照片不含人臉、車牌或住家等敏感資訊。</span></label><div class="actions"><button class="btn primary" type="submit">預覽回報</button><button class="btn" id="clear-report" type="button">清除</button></div></form><div id="report-result" aria-live="polite"></div><div class="report-auth"><h3>送出回報</h3><p class="muted">登入後即可送出；也可以使用 Google 登入。</p><p class="muted">審核通過後，回報會顯示在公開地圖。新版回報須先確認公開內容。</p><div class="actions"><a class="btn primary" href="#account">登入／註冊</a><button class="btn" id="google-login" type="button">Google 快速登入</button><button class="btn" id="google-logout" type="button" hidden>登出</button></div><p id="auth-status" class="muted" aria-live="polite">正在確認登入狀態…</p><button class="btn primary" id="submit-report" type="button" hidden>送出回報</button><p id="submit-status" aria-live="polite" class="muted"></p></div></section></div></section>`,
  analysis:()=>`<section class="container">${intro('ADAPTATION ANALYSIS','調適分析','從已核准的現場回報，了解常見的街道問題。')}<div class="analysis-shell"><div id="analysis-status" class="muted" role="status" aria-live="polite">正在整理已核准回報…</div><div id="analysis-results" hidden><div class="analysis-metrics"><article class="metric"><strong id="metric-total">—</strong><span>已核准觀察（本次載入）</span></article><article class="metric"><strong id="metric-shade">—</strong><span>回報遮蔭不足</span></article><article class="metric"><strong id="metric-tree">—</strong><span>回報有樹蔭</span></article></div><div class="analysis-grid"><section class="panel"><h2>回報類型</h2><div id="analysis-categories" class="analysis-bars"></div></section><section class="panel"><h2>現場遮蔭</h2><div id="analysis-shade" class="analysis-bars"></div></section></div><p id="analysis-note" class="muted"></p><a class="btn primary" href="#map">在地圖上查看回報↗</a></div></div></section>`,
  walk:()=>`<section class="container"><span class="eyebrow">COOLCITY · WALK</span><h1 class="section-title">找一條好走的路</h1><p class="lead">目前以北大特區作為路線示範區域。選擇出發地與目的地，探索步行路線。</p><div class="route-shell"><div class="panel route-controls"><label for="route-start">從哪裡出發？</label><select id="route-start"><option value="24.9446,121.3735">北大特區・學勤路</option><option value="24.9466,121.3759">北大特區・學成路</option><option value="24.9414,121.3702">臺北大學・三峽校區</option><option value="custom">在地圖上選位置</option></select><label for="route-end">要去哪裡？</label><select id="route-end"><option value="24.9414,121.3702">臺北大學・三峽校區</option><option value="24.9446,121.3735">北大特區・學勤路</option><option value="24.9466,121.3759">北大特區・學成路</option><option value="custom">在地圖上選位置</option></select><div class="actions"><button type="button" class="btn primary" id="route-go">查看步行路線</button><button type="button" class="btn secondary" id="route-gps">從我的位置出發</button></div><p id="route-status" aria-live="polite" class="muted">可選擇地點，或直接在地圖上設定起點與終點。</p><div id="route-summary"></div><p class="muted">路線由公開路網資料試算，實際通行請以現場為準。</p></div><div id="route-map" aria-label="步行路線地圖"></div></div></section>`,
@@ -18,12 +18,56 @@ function render(){const page=location.hash.replace('#','')||'home';if(page==='an
 // Member account: restore Google sign-in and email account controls.
 
 function mountAdminInsights(content,fb){
- const box=document.createElement('section');box.className='admin-insights';box.innerHTML='<h3>回報整理與 AI 摘要</h3><p class="muted">只使用已審核回報。選擇地點可附上該地一個氣象測站的最新觀測；不會將回報數量當作整體遮蔭比例。</p><div class="admin-insight-filters"><select id="insight-county" aria-label="選擇氣溫參考縣市"><option value="">不附氣溫</option></select><select id="insight-town" aria-label="選擇氣溫參考行政區" disabled><option value="">選擇行政區</option></select><button class="btn primary" type="button" id="insight-run">整理分析</button></div><div id="insight-result" class="admin-insight-result" role="status" aria-live="polite"></div>';
+ const box=document.createElement('section');
+ box.className='admin-insights';
+ box.innerHTML=`<div class="insight-heading"><div><h3>回報整理與 AI 摘要</h3><p class="muted">根據已核准回報整理重點，供管理員安排後續查核。</p></div></div>
+ <div class="admin-insight-filters" role="group" aria-label="AI 分析的氣溫參考地點">
+  <label class="insight-filter-label" for="insight-county">附加氣溫參考（選填）</label>
+  <select id="insight-county" aria-label="選擇氣溫參考縣市"><option value="">不附氣溫</option></select>
+  <select id="insight-town" aria-label="選擇氣溫參考行政區" disabled><option value="">選擇行政區</option></select>
+  <button class="btn primary" type="button" id="insight-run">產生摘要</button>
+ </div><div id="insight-result" class="admin-insight-result" role="status" aria-live="polite" aria-atomic="false"></div>
+ <p class="insight-footnote">AI 僅輔助整理已核准資料；回報數量不能代表城市整體遮蔭比例。氣溫是單一測站、單一時間的觀測值。</p>`;
  content.append(box);
  const county=box.querySelector('#insight-county'),town=box.querySelector('#insight-town'),run=box.querySelector('#insight-run'),result=box.querySelector('#insight-result');
  Object.keys(WEATHER_CITIES).forEach(city=>county.add(new Option(city,city)));
- county.addEventListener('change',()=>{town.replaceChildren(new Option('選擇行政區',''));(TAIWAN_DISTRICTS[county.value]||[]).forEach(name=>town.add(new Option(name,name)));town.disabled=!county.value;});
- run.addEventListener('click',async()=>{if(county.value&&!town.value){result.textContent='請選擇行政區，或選「不附氣溫」。';return;}run.disabled=true;result.textContent='正在整理已核准回報…';try{const data=await fb.analyzeApprovedReports(county.value||'',town.value||'');result.replaceChildren();const summary=document.createElement('p');summary.textContent=`本次納入 ${data.total||0} 筆已核准回報${data.limited?'（資料筆數已達上限）':''}。`;result.append(summary);if(data.weather){const w=document.createElement('p');w.textContent=`氣溫參考：${w.stationName}測站 ${w.temperature}°C，${w.observedAt||''}（中央氣象署觀測；僅供參考）`;result.append(w);}const p=document.createElement('p');p.className='insight-text';p.textContent=data.analysis||'目前沒有足夠的資料產生分析。';result.append(p);}catch(err){result.textContent='目前無法完成整理：'+(err.code==='functions/permission-denied'?'沒有管理員權限。':err.code==='functions/not-found'?'分析後端尚未部署。':'AI 服務暫時無法使用，請稍後再試。');}finally{run.disabled=false;}});
+ county.addEventListener('change',()=>{
+  town.replaceChildren(new Option('選擇行政區',''));
+  (TAIWAN_DISTRICTS[county.value]||[]).forEach(name=>town.add(new Option(name,name)));
+  town.disabled=!county.value;
+ });
+ const line=(cls,text)=>{const p=document.createElement('p');p.className=cls;p.textContent=text;return p;};
+ run.addEventListener('click',async()=>{
+  if(county.value&&!town.value){result.replaceChildren(line('insight-error','請先選擇行政區，或改選「不附氣溫」。'));return;}
+  run.disabled=true;
+  run.textContent='整理中…';
+  result.setAttribute('aria-busy','true');
+  result.replaceChildren(line('insight-loading','正在整理已核准回報並產生摘要…'));
+  try{
+   const data=await fb.analyzeApprovedReports(county.value||'',town.value||'');
+   result.replaceChildren();
+   const topline=document.createElement('div');topline.className='insight-result-head';
+   const count=document.createElement('strong');count.className='insight-count';count.textContent=`${Number(data.total)||0} 筆`;
+   const countLabel=document.createElement('span');countLabel.textContent='本次納入的已核准回報';
+   topline.append(count,countLabel);
+   if(data.limited){const capped=document.createElement('span');capped.className='insight-limit';capped.textContent='已達資料筆數上限';topline.append(capped);}
+   result.append(topline);
+   if(data.weather){
+    const w=data.weather;
+    result.append(line('insight-weather',`氣溫參考｜${w.stationName||'氣象測站'} · ${w.temperature}°C${w.observedAt?' · '+w.observedAt:''}（中央氣象署）`));
+   }
+   const body=document.createElement('div');body.className='insight-body';
+   const paragraphs=String(data.analysis||'目前沒有足夠的資料產生分析。').trim().split(/\n\s*\n|\n(?=(?:[一二三四五六七八九十]+[、.]|[1-9][、.]))/).map(t=>t.trim()).filter(Boolean);
+   paragraphs.forEach(text=>body.append(line('insight-paragraph',text)));
+   result.append(body);
+  }catch(err){
+   result.replaceChildren(line('insight-error','目前無法完成整理：'+(err.code==='functions/permission-denied'?'沒有管理員權限。':err.code==='functions/not-found'?'分析後端尚未部署。':'AI 服務暫時無法使用，請稍後再試。')));
+  }finally{
+   run.disabled=false;
+   run.textContent='重新整理摘要';
+   result.removeAttribute('aria-busy');
+  }
+ });
 }
 
 function initAccount(){
