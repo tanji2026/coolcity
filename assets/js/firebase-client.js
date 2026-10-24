@@ -1,4 +1,4 @@
-// Frontend release 2.1.6; keep module URL identical in all entry points.
+// Frontend release 2.1.7; keep module URL identical in all entry points.
 // Firebase public web configuration. This is NOT a Gemini API secret.
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js';
 import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,sendEmailVerification,updateProfile} from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js';
@@ -37,3 +37,11 @@ export async function listMyReports(){const user=auth.currentUser;if(!user)retur
 export async function listPendingReports(){const user=auth.currentUser;if(!user)throw Error('請先登入');const token=await user.getIdTokenResult();if(token.claims.admin!==true)throw Error('權限不足');const snap=await getDocs(query(collection(db,'reports'),where('status','==','pending')));return snap.docs.map(d=>({id:d.id,...d.data()}));}
 export async function reviewReport(id,status){if(!['approved','rejected'].includes(status))throw Error('無效狀態');const user=auth.currentUser;if(!user)throw Error('請先登入');const token=await user.getIdTokenResult();if(token.claims.admin!==true)throw Error('權限不足');await updateDoc(doc(db,'reports',id),{status,updatedAt:serverTimestamp(),reviewedAt:serverTimestamp(),reviewedBy:user.uid});}
 export async function reportPhotoUrl(path){return getDownloadURL(ref(storage,path));}
+
+// This callable returns ONLY approved, privacy-filtered public fields.
+export async function listPublicReports(){
+ const callable=httpsCallable(functions,'listPublicReports',{timeout:30000});
+ const response=await callable({});
+ if(!response?.data||!Array.isArray(response.data.reports))throw Error('公開回報資料格式錯誤');
+ return response.data;
+}
