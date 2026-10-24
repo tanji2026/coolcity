@@ -1,4 +1,4 @@
-// Frontend release 2.1.7; keep module URL identical in all entry points.
+// Frontend release 4.0; keep module URL identical in all entry points.
 // Firebase public web configuration. This is NOT a Gemini API secret.
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js';
 import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,sendEmailVerification,updateProfile} from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js';
@@ -17,7 +17,7 @@ export const resetPassword=email=>sendPasswordResetEmail(auth,email);
 export const resendVerification=()=>{if(!auth.currentUser)throw Error('請先登入');return sendEmailVerification(auth.currentUser);};
 
 export const authInstance=auth;
-export async function chatWithSeedling(message,history=[]){const callable=httpsCallable(functions,'chatWithSeedling',{timeout:60000});const result=await callable({message,history});return result.data;}
+export async function chatWithSeedling(message,history=[]){const callable=httpsCallable(functions,'chatWithSeedling',{timeout:35000});const result=await callable({message,history});return result.data;}
 export async function saveReport(data,photoBlob=null,onProgress=()=>{}){
  const user=auth.currentUser;if(!user)throw Error('請先登入');
  const reportRef=doc(collection(db,'reports'));let photoPath='';
@@ -29,7 +29,7 @@ export async function saveReport(data,photoBlob=null,onProgress=()=>{}){
   resetWatchdog();
   task.on('state_changed',snapshot=>{resetWatchdog();onProgress({stage:'upload',percent:Math.round(snapshot.bytesTransferred/Math.max(snapshot.totalBytes,1)*100)});},error=>finish(error),()=>finish());
  });}
- const safe={schemaVersion:2,status:'pending',source:'citizen_observation_unverified',ownerUid:user.uid,location:data.location,category:data.category,place:data.place||'',observationDate:data.observationDate,shadeObservation:data.shadeObservation,description:data.description||'',photoPath,createdAt:serverTimestamp(),updatedAt:serverTimestamp()};
+ const safe={schemaVersion:2,status:'pending',source:'citizen_observation_unverified',ownerUid:user.uid,location:data.location,category:data.category,place:data.place||'',observationDate:data.observationDate,shadeObservation:data.shadeObservation,description:data.description||'',photoPath,publicLocationConsent:data.publicLocationConsent===true,publicPhotoConsent:data.publicPhotoConsent===true && !!photoPath,createdAt:serverTimestamp(),updatedAt:serverTimestamp()};
  try{onProgress({stage:'database'});await setDoc(reportRef,safe);}catch(err){if(photoPath)await deleteObject(ref(storage,photoPath)).catch(()=>{});throw err;}
  return reportRef.id;
 }
@@ -47,3 +47,5 @@ export async function listPublicReports(){
 }
 
 export async function getCwaTemperature(params){const callable=httpsCallable(functions,'getCwaTemperature',{timeout:30000});const result=await callable(params);return result.data;}
+
+export async function analyzeApprovedReports(county,town){const callable=httpsCallable(functions,'analyzeApprovedReports',{timeout:35000});const response=await callable({county,town});return response.data;}
