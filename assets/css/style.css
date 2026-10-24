@@ -118,3 +118,9 @@ input[type="date"]{display:block;width:100%;min-width:0;max-width:100%;-webkit-a
 
 /* Native 小樹苗 chat: no iframe or Apps Script dependency */
 .seedling-panel{display:flex;flex-direction:column;height:min(520px,75dvh);width:min(390px,calc(100vw - 24px))}.seedling-panel[hidden]{display:none}.seedling-messages{flex:1;overflow-y:auto;min-height:0;padding:14px;display:flex;flex-direction:column;gap:12px;background:#fcfefc}.seedling-bubble{margin:0;padding:10px 12px;border-radius:13px;max-width:90%;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.6}.seedling-bubble.bot{background:#edf5ee;align-self:flex-start}.seedling-bubble.user{background:#d9eee0;align-self:flex-end}.seedling-compose{display:flex;gap:8px;padding:10px;border-top:1px solid #e2e9e2}.seedling-compose input{flex:1;min-width:0;border:1px solid #c4d6c9;border-radius:9px;padding:10px;font:inherit}.seedling-compose button{border:0;border-radius:9px;padding:9px 12px;background:#206b43;color:white;cursor:pointer}.seedling-compose button:disabled{opacity:.5}.seedling-state{min-height:24px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* 2.1.6: Clear login/register/reset mode selection */
+.member-auth-modes{display:flex;flex-wrap:wrap;gap:.5rem;margin:.4rem 0 .9rem}
+.member-auth-modes .btn[aria-pressed="true"]{background:#e2f0e5;border-color:#36764e;color:#19482e;font-weight:700}
+.member-auth-modes .btn:disabled{opacity:.65;cursor:wait}
+#member-status{min-height:1.5em;white-space:pre-wrap}

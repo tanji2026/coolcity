@@ -1,4 +1,4 @@
-// Frontend release 2.1.4; keep module URL identical in all entry points.
+// Frontend release 2.1.6; keep module URL identical in all entry points.
 // Firebase public web configuration. This is NOT a Gemini API secret.
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js';
 import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,sendEmailVerification,updateProfile} from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js';
@@ -11,7 +11,7 @@ const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),f
 export const watchAuth=callback=>onAuthStateChanged(auth,callback);
 export const loginGoogle=()=>signInWithPopup(auth,new GoogleAuthProvider());
 export const logout=()=>signOut(auth);
-export const registerEmail=async(email,password,name)=>{const result=await createUserWithEmailAndPassword(auth,email,password);if(name?.trim())await updateProfile(result.user,{displayName:name.trim().slice(0,60)});await sendEmailVerification(result.user);return result.user;};
+export const registerEmail=async(email,password,name)=>{const result=await createUserWithEmailAndPassword(auth,email,password);let profileError=null,verificationError=null,verificationSent=false;if(name?.trim()){try{await updateProfile(result.user,{displayName:name.trim().slice(0,60)});}catch(e){profileError=e;console.warn('帳號已建立，但顯示名稱更新失敗',e);}}try{await sendEmailVerification(result.user);verificationSent=true;}catch(e){verificationError=e;console.warn('帳號已建立，但驗證信寄送失敗',e);}return {user:result.user,verificationSent,verificationError,profileError};};
 export const loginEmail=(email,password)=>signInWithEmailAndPassword(auth,email,password);
 export const resetPassword=email=>sendPasswordResetEmail(auth,email);
 export const resendVerification=()=>{if(!auth.currentUser)throw Error('請先登入');return sendEmailVerification(auth.currentUser);};
