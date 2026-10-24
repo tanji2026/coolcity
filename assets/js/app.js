@@ -5,7 +5,7 @@ const app=document.querySelector('#app');const nav=document.querySelector('#nav'
 const intro=(label,title,description)=>`<span class="eyebrow">${label}</span><h1 class="section-title">${title}</h1><p class="lead">${description}</p>`;
 const card=(num,title,desc,route)=>`<article class="card"><span class="number">${num}</span><h3>${title}</h3><p>${desc}</p><a class="textlink" href="#${route}">前往查看 ↗</a></article>`;
 const pages={
- home:()=>`<section class="hero"><div class="eyebrow">COOLCITY · TANJI</div><h1>走在城市的每一步，<br>都有綠蔭相伴</h1><p>查看氣溫、探索綠蔭，分享你在街道上的觀察。</p><div class="weather-box"><strong>查詢當地氣溫</strong><div class="weather-controls"><button class="btn secondary" id="weather-locate" type="button">◎ 使用目前位置</button><select id="weather-city" aria-label="選擇縣市"><option value="">選擇縣市</option></select><select id="weather-district" aria-label="選擇行政區" disabled><option value="">選擇行政區</option></select><button id="weather-search" class="btn secondary" type="button" disabled>查詢氣溫</button></div><div class="weather-strip" id="weather-strip" role="status" aria-live="polite" hidden><span class="weather-temp" id="weather-temp">--°C</span><span><small id="weather-meta"></small></span></div><small id="weather-help" role="status" aria-live="polite">模式氣溫僅供參考，不代表測站實測。</small></div><div class="actions"><a class="btn primary" href="#map">探索地圖↗</a><a class="btn secondary" href="#report">分享現場觀察↗</a></div></section><section class="container"><div class="cards">${card('01','綠蔭地圖','查看道路與已審核的民眾觀察。','map')}${card('02','現場回報','拍照、選地點，提供改善線索。','report')}${card('03','調適分析','看已核准回報的類別分布。','analysis')}</div></section>`,
+ home:()=>`<section class="hero"><div class="eyebrow">COOLCITY · TANJI</div><h1>走在城市的每一步，<br>都有綠蔭相伴</h1><p>查看氣溫、探索綠蔭，分享你在街道上的觀察。</p><div class="weather-box"><strong>查詢當地氣溫</strong><div class="weather-controls"><button class="btn secondary" id="weather-locate" type="button">◎ 使用目前位置</button><select id="weather-city" aria-label="選擇縣市"><option value="">選擇縣市</option></select><select id="weather-district" aria-label="選擇行政區" disabled><option value="">選擇行政區</option></select><button id="weather-search" class="btn secondary" type="button" disabled>查詢氣溫</button></div><div class="weather-strip" id="weather-strip" role="status" aria-live="polite" hidden><span class="weather-temp" id="weather-temp">--°C</span><span><small id="weather-meta"></small></span></div><small id="weather-help" role="status" aria-live="polite">資料來源：中央氣象署測站觀測。</small></div><div class="actions"><a class="btn primary" href="#map">探索地圖↗</a><a class="btn secondary" href="#report">分享現場觀察↗</a></div></section><section class="container"><div class="cards">${card('01','綠蔭地圖','查看道路與已審核的民眾觀察。','map')}${card('02','現場回報','拍照、選地點，提供改善線索。','report')}${card('03','調適分析','看已核准回報的類別分布。','analysis')}</div></section>`,
  map:()=>`<section class="container">${intro('SHADE MAP','綠蔭地圖','看道路，也看已通過審核的現場觀察。')}<div class="map-tools"><label class="switch-row"><input type="checkbox" id="map-show-reports" checked> 顯示已審核回報</label><span id="public-map-status" class="muted" role="status" aria-live="polite">正在載入回報…</span></div><div class="map-layout"><div><div id="coolcity-map" role="application" aria-label="道路與已核准回報地圖"></div><div class="map-legend"><span><i></i>道路線段</span><span class="ped"><i></i>步道相關線段</span><span class="public-dot">● 已核准觀察（位置約略）</span></div><p class="muted">道路類型不等於實際遮蔭程度；民眾觀察為個別回報，並非官方測量。地圖 © OpenStreetMap contributors。</p></div><aside class="panel"><h3>地圖資訊</h3><div id="road-detail"><p class="muted">點選道路或回報標記查看資訊。</p></div><hr><h3>資料來源</h3><p class="muted">道路：OpenStreetMap／Geofabrik；已核准回報由 CoolCity 審核後呈現。公開座標已模糊化。</p></aside></div></section>`,
  report:()=>`<section class="container">${intro('CITIZEN REPORT','綠蔭回報','用手機拍照、確認地圖位置，再選擇現場情況。回報資料以單一觀察點記錄，不會直接當成整條道路的遮蔭狀態。')}<div class="report-layout"><div class="report-map-panel"><div class="map-guide"><strong>確認位置</strong>點選地圖或使用目前位置；標記可以拖動微調。</div><div id="report-map" aria-label="選擇回報位置的互動地圖"></div><div class="location-tools"><button class="btn" id="locate-me" type="button">◎ 使用目前位置</button><span id="selected-coordinates" aria-live="polite">尚未選擇位置</span></div><p class="muted">定位須經你授權，且可能有誤差；請在地圖上確認實際拍攝地點。地圖 © OpenStreetMap contributors。</p></div><section class="panel"><h3>拍照與現況</h3><form id="report-form" class="form"><div class="field"><label for="photo">現場照片</label><input id="photo" type="file" accept="image/*" ><small>可直接拍照或從相簿選擇。請避開人臉、車牌及住家資訊；照片會先在裝置內縮小。</small><img id="photo-preview" class="photo-preview" alt="待回報的照片預覽" hidden></div><div class="field"><label for="kind">回報類型</label><select id="kind" required><option value="">請選擇</option><option>遮蔭不足</option><option>有樹蔭</option><option>樹木修剪或移除</option><option>步行空間問題</option><option>其他觀察</option></select></div><div class="field"><label for="shade">現場遮蔭情形</label><select id="shade" required><option value="">請選擇</option><option>幾乎無遮蔭</option><option>部分遮蔭</option><option>較連續的遮蔭</option><option>無法判斷</option></select></div><div class="field"><label for="observed-at">觀察日期</label><input id="observed-at" type="date" required></div><div class="field"><label for="place">地點補充（選填）</label><input id="place" maxlength="120" placeholder="例如：公車站旁的人行道"><small>以地圖座標為主，不需要自行寫完整地址或道路名稱。</small></div><div class="field"><label for="detail">其他現場說明（選填）</label><textarea id="detail" maxlength="600" placeholder="例如：樹冠很小、遮蔭不連續、步道旁沒有樹。"></textarea></div><div class="actions"><button class="btn primary" type="submit">預覽回報</button><button class="btn" id="clear-report" type="button">清除</button></div></form><div id="report-result" aria-live="polite"></div><div class="report-auth"><h3>送出回報</h3><p class="muted">登入後即可送出；電子郵件會員請先到會員中心登入。</p><p class="muted">審核通過後，回報類型、日期與約略地點會顯示於公開地圖；照片不公開。</p><div class="actions"><a class="btn primary" href="#account">登入／註冊</a><button class="btn" id="google-login" type="button">Google 快速登入</button><button class="btn" id="google-logout" type="button" hidden>登出</button></div><p id="auth-status" class="muted" aria-live="polite">正在確認登入狀態…</p><button class="btn primary" id="submit-report" type="button" hidden>送出回報</button><p id="submit-status" aria-live="polite" class="muted"></p></div></section></div></section>`,
  analysis:()=>`<section class="container">${intro('ADAPTATION ANALYSIS','調適分析','從已核准的現場回報，了解常見的街道問題。')}<div class="analysis-shell"><div id="analysis-status" class="muted" role="status" aria-live="polite">正在整理已核准回報…</div><div id="analysis-results" hidden><div class="analysis-metrics"><article class="metric"><strong id="metric-total">—</strong><span>已核准觀察（本次載入）</span></article><article class="metric"><strong id="metric-shade">—</strong><span>回報遮蔭不足</span></article><article class="metric"><strong id="metric-tree">—</strong><span>回報有樹蔭</span></article></div><div class="analysis-grid"><section class="panel"><h2>回報類型</h2><div id="analysis-categories" class="analysis-bars"></div></section><section class="panel"><h2>現場遮蔭</h2><div id="analysis-shade" class="analysis-bars"></div></section></div><p id="analysis-note" class="muted"></p><a class="btn primary" href="#map">在地圖上查看回報↗</a></div></div></section>`,
@@ -178,47 +178,25 @@ function initWalk(){
  setTimeout(()=>map.invalidateSize(),150);
 }
 
-// Weather is fetched only after explicit action. Never store precise coordinates.
-const WEATHER_CITIES={"臺北市":[25.033,121.565],"新北市":[25.012,121.465],"基隆市":[25.128,121.741],"桃園市":[24.993,121.301],"新竹市":[24.804,120.972],"新竹縣":[24.838,121.018],"苗栗縣":[24.564,120.821],"臺中市":[24.148,120.674],"彰化縣":[24.076,120.54],"南投縣":[23.916,120.684],"雲林縣":[23.71,120.542],"嘉義市":[23.48,120.45],"嘉義縣":[23.459,120.294],"臺南市":[22.999,120.227],"高雄市":[22.627,120.301],"屏東縣":[22.672,120.488],"宜蘭縣":[24.757,121.753],"花蓮縣":[23.987,121.601],"臺東縣":[22.755,121.15],"澎湖縣":[23.569,119.566],"金門縣":[24.432,118.318],"連江縣":[26.16,119.95]};
+// CWA official station observations; no client-side API credential.
+const WEATHER_CITIES={"臺北市":1,"新北市":1,"基隆市":1,"桃園市":1,"新竹市":1,"新竹縣":1,"苗栗縣":1,"臺中市":1,"彰化縣":1,"南投縣":1,"雲林縣":1,"嘉義市":1,"嘉義縣":1,"臺南市":1,"高雄市":1,"屏東縣":1,"宜蘭縣":1,"花蓮縣":1,"臺東縣":1,"澎湖縣":1,"金門縣":1,"連江縣":1};
 function initWeather(){
  const temp=document.getElementById('weather-temp'),meta=document.getElementById('weather-meta'),strip=document.getElementById('weather-strip'),county=document.getElementById('weather-city'),district=document.getElementById('weather-district'),search=document.getElementById('weather-search'),btn=document.getElementById('weather-locate'),help=document.getElementById('weather-help');
  if(!temp||!county||!district||!search)return;
- for(const city of Object.keys(WEATHER_CITIES)){const o=document.createElement('option');o.value=city;o.textContent=city;county.append(o);}
+ for(const city of Object.keys(WEATHER_CITIES))county.add(new Option(city,city));
  let serial=0;
- async function load(lat,lon,label){const id=++serial;strip.hidden=false;temp.textContent='…';meta.textContent='正在取得氣溫';
-   try{const u=new URL('https://api.open-meteo.com/v1/forecast');u.search=new URLSearchParams({latitude:String(lat),longitude:String(lon),current:'temperature_2m',timezone:'Asia/Taipei'});
-     const res=await fetch(u,{signal:AbortSignal.timeout(12000)});if(!res.ok)throw Error('取得失敗');
-     const data=await res.json(),value=Number(data.current?.temperature_2m);
-     if(!Number.isFinite(value)||value< -30||value>55)throw Error('資料異常');if(id!==serial)return;
-     temp.textContent=value.toFixed(1)+'°C';meta.textContent=label+' · '+String(data.current.time||'').replace('T',' ')+' · Open-Meteo 模式氣溫';
-   }catch(e){if(id!==serial)return;temp.textContent='--°C';meta.textContent='暫時無法取得氣溫，請稍後重試。';}
+ async function load(params){const id=++serial;strip.hidden=false;temp.textContent='…';meta.textContent='正在取得中央氣象署觀測資料';
+  try{const cloud=await loadFirebase();const data=await cloud.getCwaTemperature(params);if(id!==serial)return;
+   temp.textContent=Number(data.temperature).toFixed(1)+'°C';
+   const place=(data.county||'')+(data.town||'');
+   meta.textContent=`${data.stationName}測站 · ${place} · ${String(data.observedAt||'').replace('T',' ').replace('+08:00','')} · 中央氣象署實測${data.nearby?'（鄰近測站）':''}`;
+   help.textContent=data.nearby?'查詢地點無可用測站，顯示鄰近測站的實際觀測值。':'顯示氣象測站的實際觀測值，不代表整個行政區的氣溫。';
+  }catch(e){if(id!==serial)return;temp.textContent='--°C';meta.textContent=e.message?.includes('not-found')?'目前沒有可用的測站觀測資料。':'中央氣象署氣溫暫時無法取得，請稍後再試。';console.warn('CWA weather',e.code||e.message);}
  }
- county.addEventListener('change',()=>{district.replaceChildren(new Option('選擇行政區',''));for(const name of (TAIWAN_DISTRICTS[county.value]||[])){district.add(new Option(name,name));}district.disabled=!county.value;search.disabled=true;help.textContent='選好行政區後，按「查詢氣溫」。';});
+ county.addEventListener('change',()=>{district.replaceChildren(new Option('選擇行政區',''));for(const name of (TAIWAN_DISTRICTS[county.value]||[]))district.add(new Option(name,name));district.disabled=!county.value;search.disabled=true;});
  district.addEventListener('change',()=>{search.disabled=!district.value;});
- search.addEventListener('click',async()=>{
-   if(!county.value||!district.value)return;
-   const city=county.value,town=district.value;
-   search.disabled=true;help.textContent=`正在查找 ${city}${town} 的代表位置…`;
-   try{
-     // Open-Meteo's public geocoder is used to resolve the district name, not user GPS.
-     const queries=[city+town,town+' '+city];let found=null;
-     for(const name of queries){
-       const u=new URL('https://geocoding-api.open-meteo.com/v1/search');u.search=new URLSearchParams({name,count:'10',language:'zh',countryCode:'TW'});
-       const response=await fetch(u,{signal:AbortSignal.timeout(10000)});if(!response.ok)continue;
-       const data=await response.json();
-       found=(data.results||[]).find(r=>Number.isFinite(r.latitude)&&Number.isFinite(r.longitude)&&(String(r.name||'').includes(town)||String(r.admin2||'').includes(town)||String(r.admin3||'').includes(town)));
-       if(found)break;
-     }
-     if(!found){help.textContent='查無這個行政區的可靠代表座標，請改用目前位置查詢；不會以縣市氣溫冒充行政區氣溫。';return;}
-     help.textContent='以行政區代表位置查詢，可能與實際所在地有差異。';
-     await load(found.latitude,found.longitude,city+town+'附近');
-   }catch(e){help.textContent='行政區位置查詢暫時無法使用，可改用目前位置。';}finally{search.disabled=false;}
- });
- btn.addEventListener('click',()=>{
-   if(!navigator.geolocation){help.textContent='裝置不支援定位，可改選行政區。';return;}
-   help.textContent='正在取得位置…';
-   navigator.geolocation.getCurrentPosition(pos=>{county.value='';district.replaceChildren(new Option('選擇行政區',''));district.disabled=true;search.disabled=true;help.textContent='已取得位置。';load(pos.coords.latitude,pos.coords.longitude,'目前位置附近');},()=>{help.textContent='無法取得位置，可改選行政區查詢。';},{enableHighAccuracy:false,timeout:12000,maximumAge:300000});
- });
+ search.addEventListener('click',()=>{if(county.value&&district.value)load({county:county.value,town:district.value});});
+ btn.addEventListener('click',()=>{if(!navigator.geolocation){help.textContent='裝置不支援定位，請改選行政區。';return;}help.textContent='正在取得位置…';navigator.geolocation.getCurrentPosition(p=>load({latitude:p.coords.latitude,longitude:p.coords.longitude}),()=>help.textContent='無法取得位置，請改選行政區。',{enableHighAccuracy:false,timeout:12000,maximumAge:300000});});
 }
 // Native on-site chat. Gemini credentials stay exclusively in Firebase Secret Manager.
 function initSeedling(){

@@ -45,3 +45,5 @@ export async function listPublicReports(){
  if(!response?.data||!Array.isArray(response.data.reports))throw Error('公開回報資料格式錯誤');
  return response.data;
 }
+
+export async function getCwaTemperature(params){const callable=httpsCallable(functions,'getCwaTemperature',{timeout:30000});const result=await callable(params);return result.data;}
